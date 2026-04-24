@@ -125,3 +125,88 @@ export interface BarChartData {
 export interface PieChartData {
   data: ChartDataPoint[]
 }
+
+// Shared content types
+export type WhatfixContentType = 'flow' | 'smart_tip' | 'beacon' | 'pop_up' | 'launcher' | 'survey' | 'task_list'
+export type ContentState = 'draft' | 'ready' | 'production'
+
+// ═══════════ Experience 1: Element Health (Element Changes) ═══════════
+
+export type ElementStatus = 'misplaced' | 'not_found' | 'removed'
+export type ReselectionStatus = 'pending' | 'in_progress' | 'resolved' | 'failed'
+export type DetectionSource = 'health_scan' | 'diagnostics'
+export type LikelyCause = 'dom_change' | 'unknown'
+
+export interface AffectedContent {
+  id: string
+  name: string
+  contentType: WhatfixContentType
+  contentState: ContentState
+  elementStatus: ElementStatus
+  applicationName: string
+  targetSelector: string
+  lastWorkingDate: string
+  reselectionStatus: ReselectionStatus
+  detectedVia: DetectionSource
+  likelyCause: LikelyCause
+  // Step-level detail — only for flows (each flow step has its own element)
+  stepNumber?: number
+  stepLabel?: string
+  totalSteps?: number
+}
+
+export interface ContentHealthScan {
+  id: string
+  applicationName: string
+  scanDate: string
+  triggerType: 'scheduled' | 'manual'
+  totalAffected: number
+  misplacedCount: number
+  notFoundCount: number
+  removedCount: number
+  resolvedCount: number
+}
+
+// ═══════════ Experience 2: Content Errors (Non-DOM, catch-all) ═══════════
+
+export type ContentErrorStatus = 'new' | 'investigating' | 'fixed' | 'ignored'
+export type ContentErrorSeverity = 'critical' | 'warning' | 'info'
+
+export interface ContentError {
+  id: string
+  name: string
+  contentType: WhatfixContentType
+  contentState: ContentState
+  applicationName: string
+  errorSummary: string
+  errorDetail: string
+  severity: ContentErrorSeverity
+  firstDetected: string
+  lastOccurred: string
+  occurrenceCount: number
+  affectedUsers?: number
+  status: ContentErrorStatus
+}
+
+// ═══════════ Content List (authoring view) ═══════════
+
+export type HealthIndicator = 'healthy' | 'warning' | 'critical'
+
+export interface ContentItem {
+  id: string
+  name: string
+  contentType: WhatfixContentType
+  contentState: ContentState
+  createdBy: string
+  lastModified: string
+}
+
+// ═══════════ Content Health View Mode ═══════════
+
+export type ContentHealthViewMode = 'element_health' | 'content_errors'
+
+// ═══════════ Unified Health Issue (DOM + Content Errors) ═══════════
+
+export type HealthIssue =
+  | { kind: 'dom'; data: AffectedContent }
+  | { kind: 'error'; data: ContentError }

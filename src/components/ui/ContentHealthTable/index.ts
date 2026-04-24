@@ -1,0 +1,1 @@
+export { ContentHealthTable } from './ContentHealthTable'
